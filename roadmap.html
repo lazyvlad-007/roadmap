@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Game Dev Roadmap Board</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #16161d;
+      --panel: #1f1f2b;
+      --accent: #ff5f8a;
+      --accent-soft: rgba(255, 95, 138, 0.12);
+      --text: #f7f7ff;
+      --muted: #a0a0b8;
+      --card: #262636;
+      --border: #323248;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #24243e 0, #141414 50%, #050509 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 16px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      background: linear-gradient(90deg, #ff5f8a 0%, #ff9966 100%);
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.4rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    header span {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    .tagline {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    main {
+      flex: 1;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Add Task Panel */
+
+    .add-task-panel {
+      background: rgba(12, 12, 20, 0.9);
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 14px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+    }
+
+    .add-task-panel h2 {
+      margin: 0;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      flex-basis: 100%;
+    }
+
+    .add-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .add-task-panel input,
+    .add-task-panel textarea,
+    .add-task-panel select {
+      background: #15151f;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      padding: 8px 10px;
+      font-size: 0.85rem;
+      outline: none;
+      min-width: 0;
+    }
+
+    .add-task-panel input:focus,
+    .add-task-panel textarea:focus,
+    .add-task-panel select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(255, 95, 138, 0.4);
+    }
+
+    .add-task-panel input {
+      flex: 2 1 180px;
+    }
+
+    .add-task-panel textarea {
+      flex: 3 1 260px;
+      resize: vertical;
+      max-height: 80px;
+      min-height: 38px;
+    }
+
+    .add-task-panel select {
+      flex: 0 0 130px;
+    }
+
+    .add-task-panel button {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--accent), #ff9966);
+      color: #fff;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+      flex: 0 0 auto;
+    }
+
+    .add-task-panel button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+    }
+
+    /* Columns / Board */
+
+    .board {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    @media (max-width: 900px) {
+      .board {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .column {
+      background: rgba(11, 11, 19, 0.94);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 12px 10px 14px;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+    }
+
+    .column-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 4px 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      margin-bottom: 6px;
+    }
+
+    .column-title {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .column-title span.dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .column[data-column="todo"] .dot {
+      background: #ffcc66;
+    }
+
+    .column[data-column="doing"] .dot {
+      background: #66ccff;
+    }
+
+    .column[data-column="done"] .dot {
+      background: #6dff9f;
+    }
+
+    .column-count {
+      font-size: 0.8rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+    }
+
+    .column-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 2px;
+      transition: background 0.15s ease, outline 0.15s ease;
+    }
+
+    .column-body.drag-over {
+      background: radial-gradient(circle at top, rgba(255, 95, 138, 0.1), transparent);
+      outline: 1px dashed rgba(255, 255, 255, 0.16);
+      border-radius: 10px;
+    }
+
+    /* Task cards */
+
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 8px 9px;
+      font-size: 0.85rem;
+      cursor: grab;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+    }
+
+    .card.dragging {
+      opacity: 0.6;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title {
+      font-weight: 600;
+      word-break: break-word;
+    }
+
+    .card-tag {
+      font-size: 0.7rem;
+      padding: 2px 7px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: var(--accent-soft);
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .card-desc {
+      color: var(--muted);
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .icon-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 0;
+      font-size: 0.8rem;
+    }
+
+    .icon-btn:hover {
+      color: #ff8080;
+    }
+
+    .pill {
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    footer {
+      padding: 6px 16px 10px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-align: right;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Game Dev Roadmap Board</h1>
+      <span class="tagline">Unity 3D • Indie Team • Drag & Drop Tasks</span>
+    </div>
+    <span>Data is saved locally in your browser</span>
+  </header>
+
+  <main>
+    <section class="add-task-panel">
+      <h2>New task</h2>
+      <div class="add-row">
+        <input id="task-title" type="text" placeholder="Example: Player movement prototype, core loop, main menu..." />
+        <textarea id="task-desc" rows="1" placeholder="Optional description: what exactly needs to be done?"></textarea>
+        <select id="task-type">
+          <option value="General">General</option>
+          <option value="Code">Code</option>
+          <option value="Design">Design</option>
+          <option value="Art">Art</option>
+          <option value="Audio">Audio</option>
+          <option value="Level">Level</option>
+        </select>
+        <button id="add-task-btn">+ Add to To Do</button>
+      </div>
+    </section>
+
+    <section class="board">
+      <div class="column" data-column="todo">
+        <div class="column-header">
+          <div class="column-title">
+            <span class="dot"></span>
+            TO DO
+          </div>
+          <div class="column-count" data-count="todo">0</div>
+        </div>
+        <div class="column-body" data-dropzone="todo"></div>
+      </div>
+
+      <div class="column" data-column="doing">
+        <div class="column-header">
+          <div class="column-title">
+            <span class="dot"></span>
+            IN PROGRESS
+          </div>
+          <div class="column-count" data-count="doing">0</div>
+        </div>
+        <div class="column-body" data-dropzone="doing"></div>
+      </div>
+
+      <div class="column" data-column="done">
+        <div class="column-header">
+          <div class="column-title">
+            <span class="dot"></span>
+            DONE
+          </div>
+          <div class="column-count" data-count="done">0</div>
+        </div>
+        <div class="column-body" data-dropzone="done"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Tip: folosește coloanele ca milestone-uri (Prototype → Core Systems → Content → Polish).
+  </footer>
+
+  <script>
+    // --- Data handling ---
+
+    const STORAGE_KEY = "gameDevRoadmapTasks_v1";
+
+    /** @type {{id:string,title:string,desc:string,type:string,column:'todo'|'doing'|'done',created:number}[]} */
+    let tasks = [];
+
+    function loadTasks() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          tasks = parsed;
+        }
+      } catch (e) {
+        console.warn("Failed to load tasks", e);
+      }
+    }
+
+    function saveTasks() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+      } catch (e) {
+        console.warn("Failed to save tasks", e);
+      }
+    }
+
+    // --- Rendering ---
+
+    const dropzones = {
+      todo: document.querySelector('[data-dropzone="todo"]'),
+      doing: document.querySelector('[data-dropzone="doing"]'),
+      done: document.querySelector('[data-dropzone="done"]'),
+    };
+
+    const countEls = {
+      todo: document.querySelector('[data-count="todo"]'),
+      doing: document.querySelector('[data-count="doing"]'),
+      done: document.querySelector('[data-count="done"]'),
+    };
+
+    function formatDate(ts) {
+      const d = new Date(ts);
+      return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    }
+
+    function render() {
+      // clear
+      Object.values(dropzones).forEach((dz) => (dz.innerHTML = ""));
+
+      const counts = { todo: 0, doing: 0, done: 0 };
+
+      tasks.forEach((task) => {
+        counts[task.column]++;
+
+        const card = document.createElement("article");
+        card.className = "card";
+        card.setAttribute("draggable", "true");
+        card.dataset.id = task.id;
+
+        card.innerHTML = `
+          <div class="card-header">
+            <div class="card-title">${escapeHtml(task.title)}</div>
+            <div class="card-tag">${escapeHtml(task.type)}</div>
+          </div>
+          ${
+            task.desc
+              ? `<div class="card-desc">${escapeHtml(task.desc)}</div>`
+              : ""
+          }
+          <div class="card-footer">
+            <span class="pill">${task.column.toUpperCase()}</span>
+            <div class="card-actions">
+              <span>${formatDate(task.created)}</span>
+              <button class="icon-btn" title="Delete task">✕</button>
+            </div>
+          </div>
+        `;
+
+        // drag events
+        card.addEventListener("dragstart", handleDragStart);
+        card.addEventListener("dragend", handleDragEnd);
+
+        // delete
+        card.querySelector(".icon-btn").addEventListener("click", () => {
+          tasks = tasks.filter((t) => t.id !== task.id);
+          saveTasks();
+          render();
+        });
+
+        dropzones[task.column].appendChild(card);
+      });
+
+      countEls.todo.textContent = counts.todo;
+      countEls.doing.textContent = counts.doing;
+      countEls.done.textContent = counts.done;
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    // --- Drag & drop ---
+
+    let draggingId = null;
+
+    function handleDragStart(e) {
+      const id = this.dataset.id;
+      draggingId = id;
+      this.classList.add("dragging");
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", id);
+    }
+
+    function handleDragEnd() {
+      this.classList.remove("dragging");
+      draggingId = null;
+    }
+
+    Object.entries(dropzones).forEach(([column, dz]) => {
+      dz.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dz.classList.add("drag-over");
+        e.dataTransfer.dropEffect = "move";
+      });
+
+      dz.addEventListener("dragleave", () => {
+        dz.classList.remove("drag-over");
+      });
+
+      dz.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dz.classList.remove("drag-over");
+        const id = draggingId || e.dataTransfer.getData("text/plain");
+        if (!id) return;
+        const task = tasks.find((t) => t.id === id);
+        if (!task) return;
+        task.column = column;
+        saveTasks();
+        render();
+      });
+    });
+
+    // --- Add task ---
+
+    const titleInput = document.getElementById("task-title");
+    const descInput = document.getElementById("task-desc");
+    const typeSelect = document.getElementById("task-type");
+    const addBtn = document.getElementById("add-task-btn");
+
+    function addTask() {
+      const title = titleInput.value.trim();
+      if (!title) {
+        alert("Scrie un titlu pentru task (ex: Player Movement, Core Loop etc.)");
+        titleInput.focus();
+        return;
+      }
+      const desc = descInput.value.trim();
+      const type = typeSelect.value;
+      const id = "task_" + Date.now() + "_" + Math.random().toString(16).slice(2);
+
+      tasks.push({
+        id,
+        title,
+        desc,
+        type,
+        column: "todo",
+        created: Date.now(),
+      });
+
+      titleInput.value = "";
+      descInput.value = "";
+      typeSelect.value = "General";
+
+      saveTasks();
+      render();
+    }
+
+    addBtn.addEventListener("click", addTask);
+
+    titleInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        addTask();
+      }
+    });
+
+    // --- Init ---
+
+    loadTasks();
+    render();
+  </script>
+</body>
+</html>
